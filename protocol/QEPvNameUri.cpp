@@ -71,7 +71,7 @@ QEPvNameUri::Protocol QEPvNameUri::getDefaultProtocol()
       //
       // QEAdaptationParameters ap ("QE_");
       // const QString defProtoSpec = ap.getString ("default_provider", "ca").toLower();
-       const QString defProtoSpec = "ca";
+      const QString defProtoSpec = "ca";
 
       for (int j = 0; j < NUMBER_OF_PROTOCOLS; j++) {
          const Protocol protocol = Protocol (j);

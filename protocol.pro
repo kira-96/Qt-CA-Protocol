@@ -21,17 +21,17 @@ include(data/data.pri)
 HEADERS += \
     QEFrameworkLibraryGlobal.h \
     QECommon.h \
+    QEEnums.h \
     QEPlatform.h \
     QERecordFieldName.h \
-    UserMessage.h \
-    imageDataFormats.h
+    QEThreadSafeQueue.h \
+    UserMessage.h
 
 SOURCES += \
     QECommon.cpp \
     QEPlatform.cpp \
     QERecordFieldName.cpp \
-    UserMessage.cpp \
-    imageDataFormats.cpp
+    UserMessage.cpp
 
 INCLUDEPATH += $${ACAI}/include
 INCLUDEPATH += \
@@ -48,6 +48,14 @@ INCLUDEPATH += $${EPICS_BASE}/include/os/Linux
 
 LIBS += -L$$ACAI/lib/$$EPICS_HOST_ARCH -lacai
 LIBS += -L$$EPICS_BASE/lib/$$EPICS_HOST_ARCH -lca -lCom -lnt -lpvAccess -lpvAccessCA -lpvData -lpvaClient
+
+VERSION = 4.0.1
+CONFIG += skip_target_version_ext
+RC_LANG = 0x0004
+QMAKE_TARGET_COMPANY = "SINAP"
+QMAKE_TARGET_DESCRIPTION = "Qt EPICS Protocol Client Lib"
+QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2024 SINAP. All rights reserved."
+QMAKE_TARGET_PRODUCT = "EPICS Protocol Lib"
 
 # Default rules for deployment.
 unix {
