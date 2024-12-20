@@ -229,6 +229,11 @@ public:
     /// This conveniance functions hides the faffing with QFileInfo/QDir
     ///
     static QString dirName (const QString& pathName);
+
+    /// Cribbed from KDM
+    ///
+    static void tagObject (QObject* object, const int tag);
+    static int objectTag (const QObject* object, const int defaultValue = -1);
 };
 
 # endif // QE_COMMON_H

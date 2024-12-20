@@ -30,6 +30,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QMetaType>
 #include <QQueue>
 #include <QMutex>
 
@@ -39,6 +40,7 @@
 #include <pv/pvAccess.h>
 #include <pv/pvData.h>
 #include <pv/clientFactory.h>
+#include <QEPlatform.h>
 #include <QEThreadSafeQueue.h>
 #include <QEVectorVariants.h>
 
@@ -737,14 +739,14 @@ bool QEPvaClient::putPvData (const QVariant& value)
       return false;
    }
 
-   QEPvaPutRequesterInterface* pinterface =
+   QEPvaPutRequesterInterface* interface =
          dynamic_cast <QEPvaPutRequesterInterface*> (this->putRequester.get ());
-   if (!pinterface) {
+   if (!interface) {
       DEBUG << "dynamic cast failed. objects";
       return false;
    }
 
-   return pinterface->putPvData (this, value);
+   return interface->putPvData (this, value);
 }
 
 //------------------------------------------------------------------------------
@@ -758,7 +760,8 @@ bool QEPvaClient::getIsConnected () const
 //
 bool QEPvaClient::dataIsAvailable () const
 {
-   return this->pvData.type() != QVariant::Invalid;
+   const QMetaType::Type mtype = QEPlatform::metaType (this->pvData);
+   return mtype != QMetaType::UnknownType;
 }
 
 //------------------------------------------------------------------------------
@@ -806,20 +809,20 @@ unsigned int QEPvaClient::hostElementCount () const
 //
 unsigned int QEPvaClient::dataElementCount () const
 {
-   const int type = this->pvData.type();
+   const QMetaType::Type mtype = QEPlatform::metaType (this->pvData);
 
    int result = 0;
 
-   if (type == QVariant::List) {
+   if (mtype == QMetaType::QVariantList) {
       result = this->pvData.toList().count();
 
    } else if (QEVectorVariants::isVectorVariant (this->pvData)) {
       result = QEVectorVariants::vectorCount (this->pvData);
 
-   } else if (type == QVariant::StringList) {
+   } else if (mtype == QMetaType::QStringList) {
       result = this->pvData.toStringList().count();
 
-   } else if (type != QVariant::Invalid) {
+   } else if (mtype !=  QMetaType::UnknownType) {
       // Assume singular value.
       result = 1;
    }
@@ -929,6 +932,20 @@ QCaDateTime QEPvaClient::getTimeStamp () const
 QString QEPvaClient::getDescription () const
 {
    return this->display.description;
+}
+
+//------------------------------------------------------------------------------
+//
+bool QEPvaClient::getReadAccess() const
+{
+   return true;
+}
+
+//------------------------------------------------------------------------------
+//
+bool QEPvaClient::getWriteAccess() const
+{
+   return true;
 }
 
 //------------------------------------------------------------------------------
@@ -1083,6 +1100,8 @@ QStringList QEPvaClient::getEnumerations () const { QStringList d; return d; }
 QCaAlarmInfo QEPvaClient::getAlarmInfo () const { QCaAlarmInfo d; return d; }
 QCaDateTime  QEPvaClient::getTimeStamp () const { QCaDateTime d; return d; }
 QString QEPvaClient::getDescription () const { return ""; }
+bool QEPvaClient::getReadAccess() const { return false; }
+bool QEPvaClient::getWriteAccess() const { return false; }
 void QEPvaClient::processUpdate (QEPvaClient::Update*) { }
 
 QEPvaClientManager::QEPvaClientManager () { }
