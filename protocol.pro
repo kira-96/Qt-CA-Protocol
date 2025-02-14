@@ -51,6 +51,7 @@ include(data/data.pri)
 
 HEADERS += \
     QEFrameworkLibraryGlobal.h \
+    QEFrameworkVersion.h \
     QECommon.h \
     QEEnums.h \
     QEPlatform.h \
@@ -59,6 +60,7 @@ HEADERS += \
     UserMessage.h
 
 SOURCES += \
+    QEFrameworkVersion.cpp \
     QECommon.cpp \
     QEPlatform.cpp \
     QERecordFieldName.cpp \
@@ -124,7 +126,7 @@ UI_DIR         = O.$${EPICS_HOST_ARCH}/ui
 RCC_DIR        = O.$${EPICS_HOST_ARCH}/rcc
 MAKEFILE       = Makefile.$${EPICS_HOST_ARCH}
 
-VERSION = 4.1.1
+VERSION = 4.1.2
 CONFIG += skip_target_version_ext
 RC_LANG = 0x0004
 QMAKE_TARGET_COMPANY = "SINAP"

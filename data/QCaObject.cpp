@@ -260,7 +260,6 @@ void QCaObject::clearConnectionState()
    //  The connection has gone from 'no connection' to 'not connectet yet')
    //
    QCaConnectionInfo connectionInfo( QCaConnectionInfo::NEVER_CONNECTED,
-                                     QCaConnectionInfo::LINK_DOWN,
                                      this->getRecordName() );
 
    emit connectionChanged( connectionInfo, variableIndex );
@@ -559,6 +558,7 @@ bool QCaObject::getReadAccess() const
 
 //------------------------------------------------------------------------------
 // Get the write access of the current connection.
+// This is deternmined by the clinet and anp specified adaptation parameter.
 //
 bool QCaObject::getWriteAccess() const
 {
@@ -758,12 +758,10 @@ void QCaObject::connectionUpdate (const bool isConnected)
 
    if (isConnected) {
       connectionInfo = QCaConnectionInfo( QCaConnectionInfo::CONNECTED,
-                                          QCaConnectionInfo::LINK_UP,
                                           this->recordName );
       QCaObject::connectedCount++;
    } else {
       connectionInfo = QCaConnectionInfo( QCaConnectionInfo::CLOSED,
-                                          QCaConnectionInfo::LINK_DOWN,
                                           this->recordName );
       QCaObject::connectedCount--;
    }
