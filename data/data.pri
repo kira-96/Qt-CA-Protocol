@@ -42,8 +42,8 @@ SOURCES += $$PWD/QCaDateTime.cpp
 HEADERS += $$PWD/QCaObject.h
 SOURCES += $$PWD/QCaObject.cpp
 
-HEADERS += $$PWD/QCaVariableNamePropertyManager.h
-SOURCES += $$PWD/QCaVariableNamePropertyManager.cpp
+# HEADERS += $$PWD/QCaVariableNamePropertyManager.h
+# SOURCES += $$PWD/QCaVariableNamePropertyManager.cpp
 
 HEADERS += $$PWD/QEByteArray.h
 SOURCES += $$PWD/QEByteArray.cpp
@@ -75,7 +75,7 @@ SOURCES += $$PWD/QEString.cpp
 HEADERS += $$PWD/QEStringFormatting.h
 SOURCES += $$PWD/QEStringFormatting.cpp
 
-HEADERS += $$PWD/qepicspv.h
-SOURCES += $$PWD/qepicspv.cpp
+# HEADERS += $$PWD/qepicspv.h
+# SOURCES += $$PWD/qepicspv.cpp
 
 # end
