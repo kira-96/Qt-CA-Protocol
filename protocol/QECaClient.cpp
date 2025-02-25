@@ -25,7 +25,7 @@
  */
 
 #include "QECaClient.h"
-#include <QCoreApplication>
+// #include <QCoreApplication>
 #include <QDebug>
 #include <QMetaType>
 #include <QTimer>
@@ -832,9 +832,11 @@ static QECaClientManager* singleton = NULL;
 // static
 void QECaClientManager::initialise ()
 {
-   if (!singleton) {   // Mutex needed ??
-      singleton = new QECaClientManager ();
-   }
+    if (!singleton) {   // Mutex needed ??
+        // singleton = new QECaClientManager ();
+        static QECaClientManager _instance;
+        singleton = &_instance;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -857,8 +859,8 @@ QECaClientManager::QECaClientManager () : QObject (NULL)
    // Connect to the about to quit signal.
    // Note: qApp is defined in QApplication
    //
-   QObject::connect (qApp, SIGNAL (aboutToQuit ()),
-                     this, SLOT   (aboutToQuitHandler ()));
+   // QObject::connect (qApp, SIGNAL (aboutToQuit ()),
+   //                   this, SLOT   (aboutToQuitHandler ()));
 
    // Schedule first poll event.
    //
@@ -868,7 +870,10 @@ QECaClientManager::QECaClientManager () : QObject (NULL)
 //------------------------------------------------------------------------------
 // destructor - place holder
 //
-QECaClientManager::~QECaClientManager () { }
+QECaClientManager::~QECaClientManager ()
+{
+    aboutToQuitHandler();
+}
 
 //------------------------------------------------------------------------------
 //
