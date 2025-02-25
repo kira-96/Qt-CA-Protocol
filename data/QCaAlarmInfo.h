@@ -74,7 +74,7 @@ public:
    bool isMajor() const;             // Return true if there is a major alarm
    bool isInvalid() const;           // Return true if there is an invalid alarm
    bool isOutOfService() const;      // Return true if the associated PV declared OOS.
-   QString style() const;            // Return a style string to update the widget's look to reflect the current alarm state
+   // QString style() const;            // Return a style string to update the widget's look to reflect the current alarm state
 
    // getStyleColorName/getColorName return standard color for the alarm state.
    // The former is paler/less solid, suitable e.g. label backgrounds. The later

@@ -266,6 +266,7 @@ bool QCaAlarmInfo::isOutOfService() const
 //------------------------------------------------------------------------------
 // Return a style string to update the widget's look to reflect the current alarm state
 //
+/*
 QString QCaAlarmInfo::style () const
 {
    QString styleColor = this->getStyleColorName ();
@@ -290,6 +291,7 @@ QString QCaAlarmInfo::style () const
 
    return result;
 }
+*/
 
 //------------------------------------------------------------------------------
 // Return the style color name for the alarm state
