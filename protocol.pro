@@ -131,7 +131,7 @@ CONFIG += skip_target_version_ext
 RC_LANG = 0x0004
 QMAKE_TARGET_COMPANY = "SINAP"
 QMAKE_TARGET_DESCRIPTION = "Qt EPICS Protocol Client Lib"
-QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2024 SINAP. All rights reserved."
+QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2024-2025 SINAP. All rights reserved."
 QMAKE_TARGET_PRODUCT = "EPICS Protocol Lib"
 
 # Default rules for deployment.
