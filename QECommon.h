@@ -29,9 +29,6 @@
 #define QE_COMMON_H
 
 #include <math.h>
-#include <QDateTime>
-#include <QList>
-#include <QRect>
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -88,9 +85,7 @@
 // This particularly usefull for non-gui command line programs.
 //
 class QColor;
-class QMainWindow;
-class QWidget;
-class QEWidget;
+class QDateTime;
 
 // General purpose utility functions.
 // We use a class of static methods as opposed to a set of regular functions.
@@ -98,25 +93,10 @@ class QEWidget;
 //
 class QE_FRAMEWORK_LIBRARY_SHARED_EXPORT QEUtilities {
 public:
-    /// For the specified bacground colour, returns font colour (black or white)
+    /// For the specified bacground colour, returns front colour (black or white)
     /// with a suitable contrast. Currently based on rgb values, and ignores alpha.
     ///
-    static QColor fontColour (const QColor& backgroundColour);
-
-    /// Converts a given colours to the associated style.
-    ///
-    static QString colourToStyle (const QColor& backgroundColour,
-                                  const QColor& foregroundColour);
-
-    /// Converts a given colour to associated background-color style,
-    /// and sets foreground (font) colour to black or white accordingly.
-    ///
-    static QString colourToStyle (const QColor& backgroundColour);
-
-    /// Provides a slightly lighter colour than the standard form background
-    /// colour. This is particularly useful for QLabel based widgets.
-    ///
-    static QString offBackgroundStyle ();
+    static QColor frontColour (const QColor& backgroundColour);
 
     // Same colour, just darker - good for edges.
     //

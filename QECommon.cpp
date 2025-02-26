@@ -27,26 +27,22 @@
 
 #include "QECommon.h"
 
-#include <math.h>
-
 #include <QDir>
 #include <QtGlobal>
 #include <QColor>
+#include <QDateTime>
 #include <QDebug>
 #include <QFileInfo>
 #include <QMetaEnum>
 #include <QMetaObject>
-#include <QPoint>
 #include <QRegularExpression>
-#include <QSize>
-#include <QScreen>
 #include <QEPlatform.h>
 
 #define DEBUG qDebug () << "QECommon" << __LINE__ << __FUNCTION__ << "  "
 
 //------------------------------------------------------------------------------
 //
-QColor QEUtilities::fontColour (const QColor& backgroundColour)
+QColor QEUtilities::frontColour (const QColor& backgroundColour)
 {
    QColor result;
    int r, g, b, a;
@@ -71,46 +67,6 @@ QColor QEUtilities::fontColour (const QColor& backgroundColour)
    }
 
    return result;
-}
-
-//------------------------------------------------------------------------------
-//
-QString  QEUtilities::colourToStyle (const QColor& backgroundColour,
-                                     const QColor& foregroundColour)
-{
-   QString result;
-   int br, bg, bb, ba;
-   int fr, fg, fb, fa;
-
-   // Split colours into components and aggragate into a style sheet.
-   //
-   backgroundColour.getRgb (&br, &bg, &bb, &ba);
-   foregroundColour.getRgb (&fr, &fg, &fb, &fa);
-
-   result = QString::asprintf ("QWidget { background-color: rgba(%d, %d, %d, %d);"
-                               " color: rgba(%d, %d, %d, %d); }",
-                               br, bg, bb, ba, fr, fg, fb, fa );
-   return result;
-}
-
-//------------------------------------------------------------------------------
-//
-QString QEUtilities::colourToStyle (const QColor& backgroundColour)
-{
-   // Choose high contrast font/foreground colour.
-   //
-   QColor foregroundColour = QEUtilities::fontColour (backgroundColour);
-   return QEUtilities::colourToStyle (backgroundColour, foregroundColour);
-}
-
-//------------------------------------------------------------------------------
-//
-QString QEUtilities::offBackgroundStyle ()
-{
-   // Standard background on Linux is #d6d2d0. Add #0a0a0a
-   // Windows may be a bit different.
-   //
-   return QEUtilities::colourToStyle (QColor (0xe0dcda));
 }
 
 //------------------------------------------------------------------------------
