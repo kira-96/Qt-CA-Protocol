@@ -296,6 +296,7 @@ QString QEUtilities::getTimeZoneTLA (const Qt::TimeSpec timeSpec, const QDateTim
             }
          }
 #else
+         Q_UNUSED(atTime)
          // Not sure what Windows has to offer (yet).
          //
          result = "???";
