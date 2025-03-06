@@ -35,6 +35,28 @@ isEmpty( _ACAI ) {
     error ( "  It is available from: https://github.com/andrewstarritt/acai.git" )
 }
 
+#===========================================================
+# Set up PV Access
+# For headless build QE_PVACCESS_SUPPORT is set in qeframeworkSup Makefile if using EPICS 7 or later.
+#
+_PVACCESS_SUPPORT = $${QE_PVACCESS_SUPPORT}
+equals(_PVACCESS_SUPPORT, "YES") {
+    # This currently assumes EPICS 7. Maybe we could allow EPICS 4 builds as well.
+    #
+    message( "QE_PVACCESS_SUPPORT is defined. The QE framework library will be built for both CA and PVA. ")
+
+    # Let the code 'know' to include PV Access related stuff.
+    #
+    DEFINES += QE_PVACCESS_SUPPORT
+
+    # If you are using EPICS 4, modify the following to reference  EPICS 4 libraries.
+    #
+    LIBS += -L$${EPICS_BASE}/lib/$${EPICS_HOST_ARCH} -lpvData  -lpvAccess -lnt
+} else {
+    message( "QE_PVACCESS_SUPPORT is not defined. The QE framework library will not include PV Access support." )
+    message( "If you want to build with PV Access support, set environment variable QE_PVACCESS_SUPPORT=YES" )
+}
+
 # Define _MINGW if using a MinGW compiler
 #
 equals( _EPICS_HOST_ARCH, "win32-x86-mingw" ) {
@@ -93,28 +115,6 @@ LIBS += -L$${EPICS_BASE}/lib/$${EPICS_HOST_ARCH} -lca -lCom
 #
 INCLUDEPATH += $${ACAI}/include
 LIBS += -L$${ACAI}/lib/$${EPICS_HOST_ARCH} -lacai
-
-#===========================================================
-# Set up PV Access
-# For headless build QE_PVACCESS_SUPPORT is set in qeframeworkSup Makefile if using EPICS 7 or later.
-#
-_PVACCESS_SUPPORT = $${QE_PVACCESS_SUPPORT}
-equals(_PVACCESS_SUPPORT, "YES") {
-    # This currently assumes EPICS 7. Maybe we could allow EPICS 4 builds as well.
-    #
-    message( "QE_PVACCESS_SUPPORT is defined. The QE framework library will be built for both CA and PVA. ")
-
-    # Let the code 'know' to include PV Access related stuff.
-    #
-    DEFINES += QE_PVACCESS_SUPPORT
-
-    # If you are using EPICS 4, modify the following to reference  EPICS 4 libraries.
-    #
-    LIBS += -L$${EPICS_BASE}/lib/$${EPICS_HOST_ARCH} -lpvData  -lpvAccess -lnt
-} else {
-    message( "QE_PVACCESS_SUPPORT is not defined. The QE framework library will not include PV Access support." )
-    message( "If you want to build with PV Access support, set environment variable QE_PVACCESS_SUPPORT=YES" )
-}
 
 TARGET = QEProtocol
 

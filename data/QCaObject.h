@@ -38,11 +38,14 @@
 #include <QCaConnectionInfo.h>
 #include <QEBaseClient.h>
 #include <QEFrameworkLibraryGlobal.h>
+#include <QEPvaCheck.h>
 
 // differed, so we don't need to include headers
 //
 class QECaClient;
+#ifdef QE_INCLUDE_PV_ACCESS
 class QEPvaClient;
+#endif
 
 // TODO: Consider renameing QCaObject to something more vanilla (e.g. QEClient)
 // and dropping the name space and that not used anywhere else in the framework.
@@ -211,7 +214,9 @@ private:
    // qobject cast to required types or return null_ptr
    //
    QECaClient* asCaClient () const;
+#ifdef QE_INCLUDE_PV_ACCESS
    QEPvaClient* asPvaClient () const;
+#endif
 
    // Clear the connection state - and signal
    //

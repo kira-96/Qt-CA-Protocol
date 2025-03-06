@@ -31,6 +31,7 @@
 
 
 #define DEBUG qDebug () << "QEPvNameUri" << __LINE__ << __FUNCTION__ << "  "
+#define INFO qInfo () << "QEPvNameUri" << __LINE__ << __FUNCTION__ << "  "
 
 //------------------------------------------------------------------------------
 // This must be consistant with the enum Protocol definition out of the header.
@@ -69,12 +70,14 @@ void QEPvNameUri::setDefaultProtocol(const Protocol protocol)
 //
 #ifndef QE_INCLUDE_PV_ACCESS
     if (protocol == pva)
+    {
+        INFO << "Unsupported protocol:" << protocolImage(protocol);
         return;
+    }
 #endif
 
     defaultProtocol = protocol;
-    qInfo() << "QEPvNameUri" << __LINE__ << __FUNCTION__ << "  "
-            << "default protocol changed to:" << protocolImage(protocol);
+    INFO << "default protocol changed to:" << protocolImage(protocol);
 }
 
 QEPvNameUri::Protocol QEPvNameUri::getDefaultProtocol()
@@ -118,9 +121,7 @@ QString QEPvNameUri::encodeUri () const
          break;
 
       case pva:
-#ifdef QE_INCLUDE_PV_ACCESS
          result = QString ("pva%1%2").arg (cds).arg (this->pvName);
-#endif
          break;
 
       default:
@@ -148,13 +149,6 @@ bool QEPvNameUri::decodeUri (const QString& uri, const bool strict)
       //
       if (protocol == undefined)
          continue;
-
-      // Don't allow the pv access protocol if not included.
-      //
-#ifndef QE_INCLUDE_PV_ACCESS
-      if (protocol == pva)
-         continue;
-#endif
 
       QString startCheck = prefix[j] + cds;
 

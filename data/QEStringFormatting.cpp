@@ -34,12 +34,16 @@
 #include <QECommon.h>
 #include <QEPlatform.h>
 #include <QEVectorVariants.h>
+#include <QEPvaCheck.h>
+#ifdef QE_INCLUDE_PV_ACCESS
 #include <QENTTableData.h>
 #include <QENTNDArrayData.h>
 #include <QEOpaqueData.h>
+#endif
 
 #define DEBUG qDebug () << "QEStringFormatting" << __LINE__ << __FUNCTION__ << "  "
 
+#ifdef QE_INCLUDE_PV_ACCESS
 // InternalFormats are an extention of Formats used in QEStringFormatting
 // and are specials for specific PVA varient types.
 // These "formats" are not selectable from within designer.
@@ -49,7 +53,7 @@ enum InternalFormats {
    NTNDImage,                  ///< Format as a NTNDArray
    PVAOpaque                   ///< Format as opaque, i.e. unknown/unhandled type.
 };
-
+#endif
 
 //------------------------------------------------------------------------------
 // Construction
@@ -410,6 +414,7 @@ void QEStringFormatting::determineDbFormat (const QVariant& value) const
          break;
 
       default:
+#ifdef QE_INCLUDE_PV_ACCESS
          if (vtype >= QMetaType::User) {
             if (QENTTableData::isAssignableVariant (value)) {
                this->dbFormat = static_cast<QE::Formats>(NTTable);
@@ -423,7 +428,9 @@ void QEStringFormatting::determineDbFormat (const QVariant& value) const
                this->dbFormat = static_cast<QE::Formats>(PVAOpaque);
                break;
             }
-         } else {
+         } else
+#endif
+         {
             this->formatFailure (QString
                                  ("%1:%2 - unexpected QVariant type '%3' %4.")
                                  .arg (__LINE__).arg (__FUNCTION__)
@@ -626,7 +633,7 @@ QString QEStringFormatting::formatElementString (const QVariant& value,
                   case QE::String:
                      result = value.toString ();
                      break;
-
+#ifdef QE_INCLUDE_PV_ACCESS
                  case NTTable:
                      // Can't display an NT Table as a string.
                      //
@@ -644,7 +651,7 @@ QString QEStringFormatting::formatElementString (const QVariant& value,
                      //
                      result = "{{opaque}}";
                      break;
-
+#endif
                   default:
                      okay = false;
                      result = formatFailure (QString ("%1 - unexpected dbFormat %2.")

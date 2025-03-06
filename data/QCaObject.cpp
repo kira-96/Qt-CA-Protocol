@@ -34,7 +34,9 @@
 #include <QEPvNameUri.h>
 #include <QENullClient.h>
 #include <QECaClient.h>
+#ifdef QE_INCLUDE_PV_ACCESS
 #include <QEPvaClient.h>
+#endif
 #include <QEStringFormatting.h>
 #include <QEIntegerFormatting.h>
 #include <QEFloatingFormatting.h>
@@ -133,8 +135,8 @@ void QCaObject::initialise( const QString& newRecordName,
    if (!decodeOkay) {
       DEBUG << "PV protocol identification failed for:" << newRecordName;
       // See comment below
-      this->client = new QENullClient (newRecordName, this);
-      return;
+      // this->client = new QENullClient (newRecordName, this);
+      // return;
    }
 
    const QEPvNameUri::Protocol protocol = uri.getProtocol ();
@@ -157,6 +159,7 @@ void QCaObject::initialise( const QString& newRecordName,
          break;
 
       case QEPvNameUri::pva:
+#ifdef QE_INCLUDE_PV_ACCESS
          this->client = new QEPvaClient (pvName, this);
          QObject::connect (this->client, SIGNAL (connectionUpdated (const bool)),
                            this,         SLOT   (connectionUpdate  (const bool)));
@@ -165,6 +168,11 @@ void QCaObject::initialise( const QString& newRecordName,
          QObject::connect (this->client, SIGNAL (putCallbackComplete    (const bool)),
                            this,         SLOT   (putCallbackNotifcation (const bool)));
          break;
+#else
+         DEBUG << "Unsupport PVA protocol" << protocol << int (protocol);
+         this->client = new QENullClient (pvName, this);
+         return;
+#endif
 
       default:
          DEBUG << "Unknown protocol" << protocol << int (protocol);
@@ -177,6 +185,7 @@ void QCaObject::initialise( const QString& newRecordName,
          //   result = this->client->getEgu();
          //
          this->client = new QENullClient (pvName, this);
+         return;
    }
 
    // Setup any the mechanism to handle messages to the user, if supplied
@@ -214,10 +223,12 @@ QECaClient* QCaObject::asCaClient () const
 
 //------------------------------------------------------------------------------
 //
+#ifdef QE_INCLUDE_PV_ACCESS
 QEPvaClient* QCaObject::asPvaClient () const
 {
    return qobject_cast <QEPvaClient*>(this->client);
 }
+#endif
 
 //------------------------------------------------------------------------------
 //
