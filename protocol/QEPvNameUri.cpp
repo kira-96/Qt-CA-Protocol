@@ -28,7 +28,6 @@
 #include <QDebug>
 #include <QECommon.h>
 #include <QEPvaCheck.h>
-// #include <QEAdaptationParameters.h>
 
 
 #define DEBUG qDebug () << "QEPvNameUri" << __LINE__ << __FUNCTION__ << "  "
@@ -44,6 +43,7 @@ static const QString prefix[QEPvNameUri::NUMBER_OF_PROTOCOLS] = {
 
 static const QString cds = "://";    // colon double slash
 
+QEPvNameUri::Protocol QEPvNameUri::defaultProtocol = QEPvNameUri::ca;
 
 //------------------------------------------------------------------------------
 // static
@@ -57,56 +57,29 @@ QString QEPvNameUri::protocolImage (const Protocol protocol)
 // QEPvNameUri
 //==============================================================================
 // static
-QEPvNameUri::Protocol QEPvNameUri::getDefaultProtocol()
+void QEPvNameUri::setDefaultProtocol(const Protocol protocol)
 {
-   // The default protocol is initialised to the default default.
-   //
-   static QEPvNameUri::Protocol theDefaultProtocol = QEPvNameUri::ca;
-   static bool theDefaultIsDefined = false;
+    if (protocol == defaultProtocol)
+        return;
 
-   // Has the default protocol been defined?
-   //
-   if (!theDefaultIsDefined) {
-      // No - attempt to figure out what the default is.
-      //
-      // QEAdaptationParameters ap ("QE_");
-      // const QString defProtoSpec = ap.getString ("default_provider", "ca").toLower();
-      const QString defProtoSpec = "ca";
+    if (protocol == undefined)
+        return;
 
-      for (int j = 0; j < NUMBER_OF_PROTOCOLS; j++) {
-         const Protocol protocol = Protocol (j);
-
-         // Don't allow the undefined protocol.
-         //
-         if (protocol == undefined)
-            continue;
-
-         // Don't allow the pv access protocol if not included.
-         //
+// Don't allow the pv access protocol if not included.
+//
 #ifndef QE_INCLUDE_PV_ACCESS
-         if (protocol == pva)
-            continue;
+    if (protocol == pva)
+        return;
 #endif
 
-         if (defProtoSpec == prefix[j]) {
-            // Found it.
-            theDefaultProtocol = protocol;
-            theDefaultIsDefined = true;
-            break;
-         }
-      }
+    defaultProtocol = protocol;
+    qInfo() << "QEPvNameUri" << __LINE__ << __FUNCTION__ << "  "
+            << "default protocol changed to:" << protocolImage(protocol);
+}
 
-      // Either no protocol specified or an invalid protocol specified.
-      //
-      if (!theDefaultIsDefined) {
-         DEBUG << "Undefined/invalid default protocol" << defProtoSpec
-               << ", going with Channel Access";
-         theDefaultProtocol = QEPvNameUri::ca;
-         theDefaultIsDefined = true;
-      }      
-   }
-
-   return theDefaultProtocol;
+QEPvNameUri::Protocol QEPvNameUri::getDefaultProtocol()
+{
+    return defaultProtocol;
 }
 
 //------------------------------------------------------------------------------

@@ -114,8 +114,11 @@ public:
    void setPvName (const QString& pvName);      // set pv name part of uri
    QString getPvName () const;                  // get pv name part of uri
 
+   static void setDefaultProtocol(const Protocol protocol);  // set default protocol
+   static Protocol getDefaultProtocol();        // get defaule protocol
+
 private:
-   static Protocol getDefaultProtocol();        // uses an adaptation parameter
+   static Protocol defaultProtocol;
    Protocol protocol;
    QString pvName;
 };

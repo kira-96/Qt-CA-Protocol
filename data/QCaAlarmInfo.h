@@ -29,11 +29,6 @@
 #ifndef QE_ALARM_INFO_H
 #define QE_ALARM_INFO_H
 
-#include <QObject>
-#include <QList>
-#include <QRegularExpression>
-#include <QString>
-#include <QStringList>
 #include <QEPvNameUri.h>
 #include <QEFrameworkLibraryGlobal.h>
 
@@ -73,20 +68,13 @@ public:
    bool isMinor() const;             // Return true if there is a minor alarm
    bool isMajor() const;             // Return true if there is a major alarm
    bool isInvalid() const;           // Return true if there is an invalid alarm
-   bool isOutOfService() const;      // Return true if the associated PV declared OOS.
-   // QString style() const;            // Return a style string to update the widget's look to reflect the current alarm state
-
-   // getStyleColorName/getColorName return standard color for the alarm state.
-   // The former is paler/less solid, suitable e.g. label backgrounds. The later
-   // is more solid suitable for graphics. In both cases the returned format is
-   // of the form of a 6 digit hex string, e.g.: "#0080ff"
-   //
-   QString getStyleColorName() const; // Return 'standard' style colour for the alarm state.
-   QString getColorName() const;      // Return 'standard' colour for the alarm state.
+   // bool isOutOfService() const;      // Return true if the associated PV declared OOS.
 
    static Severity getInvalidSeverity();  // Return a severity that will not match any valid severity
    Severity getSeverity() const;      // Return the current severity
    Status   getStatus() const;        // Return the current status
+   QString  getPvName() const;        // Return the record name
+   QEPvNameUri::Protocol getProtocol() const;  // Return the protocol
 
 private:
    QEPvNameUri::Protocol protocol;      // protocol - if known
@@ -94,93 +82,6 @@ private:
    Status   status;      // Alarm state
    Severity severity;    // Alarm severity
    QString  message;     // Alarm message (PV Access only - otherwise empty string)
-};
-
-
-//------------------------------------------------------------------------------
-// The main purpose of this class is to manage the color names, which in turn
-// control the widget color dependent on the PV severtiy state.
-//
-class QE_FRAMEWORK_LIBRARY_SHARED_EXPORT QCaAlarmInfoColorNamesManager :
-      public QObject
-{
-   Q_OBJECT
-public:
-   // Modes for programatically set color names.
-   //
-   enum ColorNameKinds {
-      cnkPrimary,   // These color names can be over-ridden by adaptation parameter.
-      cnkOverride   // These color names supersede all other color name definitions.
-   };
-
-   static void setStyleColorNames (const ColorNameKinds kind,
-                                   const QStringList& styleColorNames);
-   static QStringList getStyleColorNames (const ColorNameKinds kind);
-
-   static void setColorNames (const ColorNameKinds kind,
-                              const QStringList& colorNames);
-   static QStringList getColorNames (const ColorNameKinds kind);
-
-   // Return default/standard style colour names and color names.
-   //
-   static QStringList getDefaultStyleColorNames();
-   static QStringList getDefaultColorNames();
-
-   // Return currently style colour names and color names.
-   //
-   static QStringList getInUseStyleColorNames();
-   static QStringList getInUseColorNames();
-
-   // Set and get the out of service PV name list.
-   // The matching includes/excludes .VAL when checking for a match, e.g
-   // PV name SR11BCM01:CURRENT_MONITOR will match OOS name SR11BCM01:CURRENT_MONITOR.VAL
-   // and vice-versa.
-   //
-   // This PV name list may contain regular expressions.
-   //
-   static void setOosPvNameList (const QStringList& pvNameList);
-   static QStringList getOosPvNameList ();
-
-   // clearOosPvNameList is a conveniance function functionally identical
-   // to supplying an empty name list to setOosPvNameList.
-   //
-   static void clearOosPvNameList ();
-
-private:
-   explicit QCaAlarmInfoColorNamesManager ();
-   ~QCaAlarmInfoColorNamesManager ();
-
-   // Called after any of the source color names are updated.
-   //
-   static void determineColorNames ();
-
-   // Used to extract adaptation parameters.
-   // Uses the environment variables QE_STYLE_COLOR_NAMES and QE_COLOR_NAMES
-   //
-   static void extractAdaptationColors ();
-
-   // Checks if the given name is flagged as out of service.
-   //
-   static bool isBasicNameMatch (const QString& pvName);
-   static bool isSmartNameMatch (const QString& pvName);
-
-   // Checks if the given name is flagged as out of service.
-   //
-   static bool isPvNameDeclaredOos (const QEPvNameUri::Protocol protocol,
-                                    const QString& pvName);
-
-   typedef QList<QRegularExpression> QRegularExpressionList;
-
-   static QStringList oosPvNameList;             // textual regular expressions
-   static QRegularExpressionList oosRegExpList;  // compiled regular expressions
-
-   static bool elaborate ();
-   static const bool callElaborate;
-
-private slots:
-   void applicationStartedHandler ();
-
-   friend class QCaAlarmInfo;
 };
 
 #endif // QE_ALARM_INFO_H
