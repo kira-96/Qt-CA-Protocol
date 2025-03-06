@@ -26,8 +26,6 @@
 
 #include "QCaObject.h"
 
-#include <QtCore>
-#include <QCoreApplication>
 #include <QDebug>
 #include <QByteArray>
 #include <QMetaType>
@@ -123,7 +121,6 @@ void QCaObject::initialise( const QString& newRecordName,
 
    // Note the record required name and associated index.
    //
-   this->recordName = newRecordName;
    this->variableIndex = variableIndexIn;
    this->userMessage = userMessageIn;
    this->signalsToSend = signalsToSendIn;
@@ -142,6 +139,7 @@ void QCaObject::initialise( const QString& newRecordName,
 
    const QEPvNameUri::Protocol protocol = uri.getProtocol ();
    const QString pvName = uri.getPvName ();
+   this->recordName = pvName;
 
    QECaClient* caClient;
 
