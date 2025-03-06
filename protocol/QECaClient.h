@@ -37,6 +37,9 @@
 
 // We use encapsulation rather than direct inheritance.
 //
+QT_BEGIN_NAMESPACE
+class QTimer;
+QT_END_NAMESPACE
 class QE_ACAI_Client;  // differed - internal class
 
 //------------------------------------------------------------------------------
@@ -142,6 +145,7 @@ private:
    static void notificationHandlers (const char* notification);
 
    bool isRunning;
+   QTimer *pollTimer;
 
 private slots:
    void timeoutHandler ();

@@ -30,7 +30,6 @@
 #include <stdint.h>
 #include <QObject>
 #include <QString>
-#include <QTimer>
 #include <QVariant>
 #include <QEPvaCheck.h>
 
@@ -43,6 +42,10 @@
 #include <QCaDateTime.h>
 #include <QEPvaData.h>
 #include <QEFrameworkLibraryGlobal.h>
+
+QT_BEGIN_NAMESPACE
+class QTimer;
+QT_END_NAMESPACE
 
 /// The QEPvaClient class
 ///
@@ -153,6 +156,7 @@ private:
    static void initialise ();
 
    bool isRunning;
+   QTimer *pollTimer;
 
 private slots:
    void timeoutHandler ();

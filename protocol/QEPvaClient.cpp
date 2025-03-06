@@ -32,6 +32,7 @@
 #include <QMetaType>
 #include <QQueue>
 #include <QMutex>
+#include <QTimer>
 
 #include <epicsTime.h>
 #include <QEPvNameUri.h>
@@ -1035,6 +1036,10 @@ QEPvaClientManager::QEPvaClientManager () : QObject (NULL)
       DEBUG << "This QEPvaClientManager instance is not the singleton";
       return;
    }
+
+   this->pollTimer = new QTimer(this);
+   this->pollTimer->setSingleShot(true);
+   connect(this->pollTimer, SIGNAL(timeout()), this, SLOT(timeoutHandler()));
 }
 
 //------------------------------------------------------------------------------
@@ -1070,7 +1075,7 @@ void QEPvaClientManager::timeoutHandler ()
    // Schedule another poll event - 16 mS approx 60Hz.
    // Note: the delay is relative to the end of processing the poll function.
    //
-   QTimer::singleShot (16, this, SLOT (timeoutHandler ()));
+   this->pollTimer->start(16);
 }
 
 #else
