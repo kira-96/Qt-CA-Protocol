@@ -29,9 +29,9 @@
 #include <QTextStream>
 #include <QDebug>
 
-static const QDateTime qtEpoch    (QDate( 1970, 1, 1 ), QTime( 0, 0, 0, 0 ), Qt::UTC );
-static const QDateTime epicsEpoch (QDate( 1990, 1, 1 ), QTime( 0, 0, 0, 0 ), Qt::UTC );
-static unsigned long EPICSQtEpocOffset = qtEpoch.secsTo ( epicsEpoch );
+Q_GLOBAL_STATIC_WITH_ARGS(QDateTime, qtEpoch, (QDate( 1970, 1, 1 ), QTime( 0, 0, 0, 0 ), Qt::UTC));
+Q_GLOBAL_STATIC_WITH_ARGS(QDateTime, epicsEpoch, (QDate( 1990, 1, 1 ), QTime( 0, 0, 0, 0 ), Qt::UTC));
+static unsigned long EPICSQtEpocOffset = qtEpoch->secsTo ( *epicsEpoch );
 
 /*
   Construct an empty QCa date time
@@ -166,7 +166,7 @@ double QCaDateTime::secondsTo( const QDateTime & target ) const
  */
 unsigned long QCaDateTime::getSeconds() const
 {
-   qint64 msec = epicsEpoch.msecsTo (*this);
+   qint64 msec = epicsEpoch->msecsTo (*this);
 
    if( msec < 0 ) msec = 0;
    return (unsigned long) (msec / 1000);
@@ -177,7 +177,7 @@ unsigned long QCaDateTime::getSeconds() const
  */
 unsigned long QCaDateTime::getNanoSeconds() const
 {
-   qint64 msec = epicsEpoch.msecsTo (*this);
+   qint64 msec = epicsEpoch->msecsTo (*this);
 
    if( msec < 0 ) msec = 0;
 

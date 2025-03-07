@@ -36,13 +36,13 @@
 //------------------------------------------------------------------------------
 // This must be consistant with the enum Protocol definition out of the header.
 //
-static const QString prefix[QEPvNameUri::NUMBER_OF_PROTOCOLS] = {
+static const char* prefix[QEPvNameUri::NUMBER_OF_PROTOCOLS] = {
    "__undefined__",    // undefined
    "ca",               // ca
    "pva"               // pva
 };
 
-static const QString cds = "://";    // colon double slash
+static const char* cds = "://";    // colon double slash
 
 QEPvNameUri::Protocol QEPvNameUri::defaultProtocol = QEPvNameUri::ca;
 
@@ -117,11 +117,11 @@ QString QEPvNameUri::encodeUri () const
 
    switch (this->protocol) {
       case ca:
-         result = QString ("ca%1%2").arg (cds).arg(this->pvName);
+         result = QString ("ca%1%2").arg (cds, this->pvName);
          break;
 
       case pva:
-         result = QString ("pva%1%2").arg (cds).arg (this->pvName);
+         result = QString ("pva%1%2").arg (cds, this->pvName);
          break;
 
       default:
@@ -150,11 +150,11 @@ bool QEPvNameUri::decodeUri (const QString& uri, const bool strict)
       if (protocol == undefined)
          continue;
 
-      QString startCheck = prefix[j] + cds;
+      QString startCheck = QString("%1%2").arg(prefix[j], cds);
 
       // Note the use of toLower.
       //
-      if (work.toLower().startsWith (startCheck)) {
+      if (work.startsWith (startCheck, Qt::CaseInsensitive)) {
          // We found a valid protocol - remove it from work to from the PV name.
          //
          specifiedProtocol = protocol;

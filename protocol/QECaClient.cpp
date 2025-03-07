@@ -825,7 +825,7 @@ void QECaClient::putCallbackNotifcation (const bool isSuccessful)
 // This object created when first needed, and not before.
 // Just declaring as a regular object doesn't work.
 //
-static QECaClientManager singleton;
+QECaClientManager QECaClientManager::singleton;
 
 //------------------------------------------------------------------------------
 // static
@@ -881,7 +881,19 @@ QECaClientManager::~QECaClientManager ()
    // Call `finalise` here.
    //
    this->isRunning = false;
-   ACAI::Client::finalise ();
+   if (this->pollTimer->isActive()) {
+       this->pollTimer->stop();
+   }
+
+   // There is an error message from EPICS here,
+   // "errlogInit failed"
+   // May be an issue with the ACAI library.
+   QT_TRY {
+       ACAI::Client::finalise ();
+   }
+   QT_CATCH (...) {
+       DEBUG << ": finalise exception.";
+   }
 }
 
 //------------------------------------------------------------------------------

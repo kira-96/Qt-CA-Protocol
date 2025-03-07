@@ -1300,7 +1300,7 @@ double QEStringFormatting::toDouble (const QString& image, bool& okay) const
       const bool isP = ((c == 'p') || (c == 'P'));      // alternative
       if ((isE && (workBase < 11)) || (isP && (workBase >= 11))) {
          bool ok;
-         exponent = work.mid (j + 1).toInt (&ok);
+         exponent = work.midRef (j + 1).toInt (&ok);
          if (!ok) {
             return 0.0;
          }
@@ -1394,7 +1394,7 @@ QString QEStringFormatting::toIntegerStringGeneric (const Number value) const
       if (this->radixBase == 16) {
          // We can't but the 0x directly in the string as %1 becomes %10
          //
-         return QString ("%1%2%3").arg (sign).arg ("0x").arg (&work[p]);
+         return QString ("%1%2%3").arg (sign, "0x", &work[p]);
       } else {
          return QString ("%1%2#%3").arg (sign).arg (this->radixBase).arg (&work[p]);
       }
@@ -1402,7 +1402,7 @@ QString QEStringFormatting::toIntegerStringGeneric (const Number value) const
 
    // No radix prefix
    //
-   return QString ("%1%2").arg (sign).arg (&work[p]);
+   return QString ("%1%2").arg (sign, &work[p]);
 }
 
 //------------------------------------------------------------------------------

@@ -101,6 +101,7 @@ public:
 
 private:
    void processUpdate (QEPvaClient::Update* update);
+   void closeChannelInternal();
 
    // The framework does not use strong references to track QEPvaClient objects,
    // so we use a magic tag and unique identifier to detect stale references.
@@ -155,8 +156,12 @@ private:
    //
    static void initialise ();
 
+   static QEPvaClientManager singleton;
    bool isRunning;
    QTimer *pollTimer;
+#ifdef QE_INCLUDE_PV_ACCESS
+   epics::pvAccess::ChannelProvider::shared_pointer pvaProvider = Q_NULLPTR;
+#endif
 
 private slots:
    void timeoutHandler ();

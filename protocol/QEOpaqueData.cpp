@@ -25,7 +25,6 @@
  */
 
 #include "QEOpaqueData.h"
-#include <iostream>
 #include <QEPvaData.h>
 
 #define DEBUG qDebug() << "QEOpaqueData" << __LINE__ << __FUNCTION__ << "  "

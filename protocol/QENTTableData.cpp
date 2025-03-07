@@ -25,7 +25,6 @@
  */
 
 #include "QENTTableData.h"
-#include <iostream>
 #include <QEPvaData.h>
 
 #define DEBUG qDebug() << "QENTTableData" << __LINE__ << __FUNCTION__ << "  "

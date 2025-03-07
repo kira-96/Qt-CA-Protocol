@@ -144,6 +144,7 @@ private:
 private:
    static void notificationHandlers (const char* notification);
 
+   static QECaClientManager singleton;
    bool isRunning;
    QTimer *pollTimer;
 

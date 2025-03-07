@@ -26,8 +26,6 @@
 
 #include "QEPvaClient.h"
 
-#ifdef QE_INCLUDE_PV_ACCESS
-
 #include <QDebug>
 #include <QMetaType>
 #include <QQueue>
@@ -48,7 +46,7 @@
 
 #define MAGIC_VALUE  0x3243F6A8885A308D
 
-static const QVariant nullVariant;
+Q_GLOBAL_STATIC(QVariant, nullVariant);
 
 //==============================================================================
 // QEPvaClientReference
@@ -186,7 +184,7 @@ void QEPvaClient::Update::process()
 
 //==============================================================================
 //
-static QEThreadSafeQueue<QEPvaClient::Update*> pvaClientUpdateQueue;
+Q_GLOBAL_STATIC(QEThreadSafeQueue<QEPvaClient::Update*>, pvaClientUpdateQueue);
 
 
 //==============================================================================
@@ -278,17 +276,17 @@ void QEPvaChannelRequesterInterface::channelStateChange (pva::Channel::shared_po
       case pva::Channel::CONNECTED:
          item = new QEPvaClient::Update (this->clientReference, "",
                                          QEPvaClient::Update::ukConnection,
-                                         nullVariant, "",
+                                         *nullVariant, "",
                                          true);
-         pvaClientUpdateQueue.enqueue (item);
+         pvaClientUpdateQueue->enqueue (item);
          break;
 
       case pva::Channel::DISCONNECTED:
          item = new QEPvaClient::Update (this->clientReference, "",
                                          QEPvaClient::Update::ukConnection,
-                                         nullVariant, "",
+                                         *nullVariant, "",
                                          false);
-         pvaClientUpdateQueue.enqueue (item);
+         pvaClientUpdateQueue->enqueue (item);
          break;
 
       case pva::Channel::DESTROYED:
@@ -421,7 +419,7 @@ void QEPvaMonitorRequesterInterface::processElement (pva::MonitorElement::const_
 
    // We have copied all the element data.
    //
-   pvaClientUpdateQueue.enqueue (item);
+   pvaClientUpdateQueue->enqueue (item);
 }
 
 //------------------------------------------------------------------------------
@@ -578,8 +576,6 @@ bool QEPvaPutRequesterInterface::putPvData (QEPvaClient* client, const QVariant&
 // QEPvaClient
 //==============================================================================
 
-static pva::ChannelProvider::shared_pointer pvaProvider = NULL;
-
 //------------------------------------------------------------------------------
 //
 QEPvaClient::QEPvaClient (const QString& pvName,
@@ -600,7 +596,7 @@ QEPvaClient::QEPvaClient (const QString& pvName,
    this->channel = NULL;
 
    this->id = "";
-   this->pvData = nullVariant;
+   this->pvData = *nullVariant;
    this->firstUpdate = false;
 
    // Create the channel, monitor, put and get requestor and convert to saved shared pointers
@@ -628,7 +624,7 @@ QEPvaClient::QEPvaClient (const QString& pvName,
 //
 QEPvaClient::~QEPvaClient()
 {
-   this->closeChannel ();
+   this->closeChannelInternal();
    this->magic = 0;
    this->uniqueId = 0;
    this->getRequester.reset();
@@ -654,12 +650,12 @@ bool QEPvaClient::openChannel (const ChannelModesFlags modes)
    // We need to hold a reference to the channel to keep it "alive"
    // The channel keeps the requestor and the monitor "alive".
    //
-   if (!pvaProvider) {
+   if (QEPvaClientManager::singleton.pvaProvider == Q_NULLPTR) {
       DEBUG << "pvaProvider not created";
       return false;
    }
 
-   this->channel = pvaProvider->createChannel (this->getPvName().toStdString(),
+   this->channel = QEPvaClientManager::singleton.pvaProvider->createChannel (this->getPvName().toStdString(),
                                                this->channelRequester, 10);
 
    // Now configure the channel.
@@ -707,24 +703,7 @@ bool QEPvaClient::openChannel (const ChannelModesFlags modes)
 //
 void QEPvaClient::closeChannel ()
 {
-   if (this->getter) {
-      this->getter->destroy();
-   }
-   if (this->putter) {
-      this->putter->destroy();
-   }
-   if (this->monitor) {
-      this->monitor->stop ();
-      this->monitor->destroy ();
-   }
-   if (this->channel) {
-      this->channel->destroy ();
-   }
-
-   this->getter.reset ();
-   this->putter.reset ();
-   this->monitor.reset ();
-   this->channel.reset ();
+    closeChannelInternal();
 }
 
 //------------------------------------------------------------------------------
@@ -784,7 +763,7 @@ QString QEPvaClient::getId () const
    if (!this->pvType.isEmpty()) {
       suffix = QString (" (%2)").arg(this->pvType);
    }
-   return QString ("%1%2").arg (this->id).arg(suffix);
+   return QString ("%1%2").arg (this->id, suffix);
 }
 
 //------------------------------------------------------------------------------
@@ -966,7 +945,7 @@ void QEPvaClient::processUpdate (QEPvaClient::Update* update)
          this->isConnected = update->getIsConnected();
          if (!this->isConnected) {
             this->id = "";
-            this->pvData = nullVariant;
+            this->pvData = *nullVariant;
             this->enumeration.isDefined = false;
             this->alarm.isDefined = false;
             this->timeStamp.isDefined = false;
@@ -1002,12 +981,33 @@ void QEPvaClient::processUpdate (QEPvaClient::Update* update)
    }
 }
 
+void QEPvaClient::closeChannelInternal()
+{
+    if (this->getter) {
+        this->getter->destroy();
+    }
+    if (this->putter) {
+        this->putter->destroy();
+    }
+    if (this->monitor) {
+        this->monitor->stop ();
+        this->monitor->destroy ();
+    }
+    if (this->channel) {
+        this->channel->destroy ();
+    }
+
+    this->getter.reset ();
+    this->putter.reset ();
+    this->monitor.reset ();
+    this->channel.reset ();
+}
 
 //==============================================================================
 // Helper class: QEPvaClientManager
 //==============================================================================
 //
-QEPvaClientManager singleton;
+QEPvaClientManager QEPvaClientManager::singleton;
 
 //------------------------------------------------------------------------------
 // static
@@ -1018,7 +1018,7 @@ void QEPvaClientManager::initialise ()
 
    pva::ClientFactory::start();
    pva::ChannelProviderRegistry::shared_pointer providerRegistry = pva::ChannelProviderRegistry::clients();
-   pvaProvider = providerRegistry->getProvider("pva");
+   singleton.pvaProvider = providerRegistry->getProvider("pva");
 
    // Schedule first poll event.
    //
@@ -1052,8 +1052,11 @@ QEPvaClientManager::~QEPvaClientManager ()
    }
 
    this->isRunning = false;
+   if (this->pollTimer->isActive()) {
+       this->pollTimer->stop();
+   }
    pva::ClientFactory::stop();
-   pvaClientUpdateQueue.clear();
+   pvaClientUpdateQueue->clear();
 }
 
 //------------------------------------------------------------------------------
@@ -1064,7 +1067,7 @@ void QEPvaClientManager::timeoutHandler ()
 
    while (true) {
       QEPvaClient::Update* item = nullptr;
-      bool ok = pvaClientUpdateQueue.dequeue (item);
+      bool ok = pvaClientUpdateQueue->dequeue (item);
       if (!ok) break;  // all done
       if (item) {
          item->process();
@@ -1077,49 +1080,5 @@ void QEPvaClientManager::timeoutHandler ()
    //
    this->pollTimer->start(16);
 }
-
-#else
-
-// QE_INCLUDE_PV_ACCESS not defined - just provide stubb functions.
-
-QEPvaClient::QEPvaClient (const QString& pvName,
-                          QObject* parent) :
-   QEBaseClient (QEBaseClient::PVAType, pvName, parent) { }
-QEPvaClient::~QEPvaClient () { }
-bool QEPvaClient::openChannel (const ChannelModesFlags) { return false; }
-void QEPvaClient::closeChannel () { }
-bool QEPvaClient::getIsConnected () const { return false; }
-bool QEPvaClient::dataIsAvailable () const { return false; }
-QString QEPvaClient::getId () const { return ""; }
-QString QEPvaClient::getRemoteAddress() const { return ""; }
-QString QEPvaClient::getEgu() const { return ""; }
-int QEPvaClient::getPrecision() const { return 0; }
-unsigned int QEPvaClient::hostElementCount () const { return 0; }
-unsigned int QEPvaClient::dataElementCount () const { return 0; }
-double QEPvaClient::getDisplayLimitHigh() const { return 0.0; }
-double QEPvaClient::getDisplayLimitLow() const { return 0.0; }
-double QEPvaClient::getHighAlarmLimit() const { return 0.0; }
-double QEPvaClient::getLowAlarmLimit() const { return 0.0; }
-double QEPvaClient::getHighWarningLimit() const { return 0.0; }
-double QEPvaClient::getLowWarningLimit() const { return 0.0; }
-double QEPvaClient::getControlLimitHigh() const { return 0.0; }
-double QEPvaClient::getControlLimitLow() const { return 0.0; }
-double QEPvaClient::getMinStep() const { return 0.0; }
-QVariant QEPvaClient::getPvData () const { QVariant d; return d; }
-bool QEPvaClient::putPvData (const QVariant&) { return false; }
-QStringList QEPvaClient::getEnumerations () const { QStringList d; return d; }
-QCaAlarmInfo QEPvaClient::getAlarmInfo () const { QCaAlarmInfo d; return d; }
-QCaDateTime  QEPvaClient::getTimeStamp () const { QCaDateTime d; return d; }
-QString QEPvaClient::getDescription () const { return ""; }
-bool QEPvaClient::getReadAccess() const { return false; }
-bool QEPvaClient::getWriteAccess() const { return false; }
-void QEPvaClient::processUpdate (QEPvaClient::Update*) { }
-
-QEPvaClientManager::QEPvaClientManager () { }
-QEPvaClientManager::~QEPvaClientManager () { }
-void QEPvaClientManager::initialise () { }
-void QEPvaClientManager::timeoutHandler () { }
-
-#endif
 
 // end

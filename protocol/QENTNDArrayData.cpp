@@ -510,7 +510,7 @@ int QENTNDArrayData::getBitDepth () const
 //
 QVariant QENTNDArrayData::getAttibute (const QString& name) const
 {
-   QVariant result = this->attributeMap.value (name, result);
+   QVariant result = this->attributeMap.value (name, QVariant());
    return result;
 }
 
