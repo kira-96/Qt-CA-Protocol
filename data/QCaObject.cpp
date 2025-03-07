@@ -34,6 +34,7 @@
 #include <QEPvNameUri.h>
 #include <QENullClient.h>
 #include <QECaClient.h>
+#include <QEPvaCheck.h>
 #ifdef QE_INCLUDE_PV_ACCESS
 #include <QEPvaClient.h>
 #endif
@@ -220,15 +221,6 @@ QECaClient* QCaObject::asCaClient () const
 {
    return qobject_cast <QECaClient*>(this->client);
 }
-
-//------------------------------------------------------------------------------
-//
-#ifdef QE_INCLUDE_PV_ACCESS
-QEPvaClient* QCaObject::asPvaClient () const
-{
-   return qobject_cast <QEPvaClient*>(this->client);
-}
-#endif
 
 //------------------------------------------------------------------------------
 //
