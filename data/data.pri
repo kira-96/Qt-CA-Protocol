@@ -33,8 +33,10 @@ SOURCES += $$PWD/QCaAlarmInfo.cpp
 HEADERS += $$PWD/QCaConnectionInfo.h
 SOURCES += $$PWD/QCaConnectionInfo.cpp
 
-# HEADERS += $$PWD/QCaDataPoint.h
-# SOURCES += $$PWD/QCaDataPoint.cpp
+contains(DEFINES, QE_ARCHAPPL_SUPPORT) {
+HEADERS += $$PWD/QCaDataPoint.h
+SOURCES += $$PWD/QCaDataPoint.cpp
+}
 
 HEADERS += $$PWD/QCaDateTime.h
 SOURCES += $$PWD/QCaDateTime.cpp

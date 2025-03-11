@@ -31,6 +31,9 @@
 #include <QDebug>
 #include <alarm.h>
 #include <acai_client_types.h>
+#ifdef QE_ARCHAPPL_SUPPORT
+#include <QEArchiveInterface.h>
+#endif
 
 #define DEBUG  qDebug () << "QCaAlarmInfo" << __LINE__ << __FUNCTION__ << "  "
 
@@ -167,9 +170,11 @@ QString QCaAlarmInfo::severityName () const
    if ((this->severity & 0x0f00) == 0x0f00) {
       // Do CA archiver severity specials.
       //
-      // QEArchiveInterface::archiveAlarmSeverity sevr =
-      //       QEArchiveInterface::archiveAlarmSeverity (this->severity);
-      // result = QEArchiveInterface::alarmSeverityName (sevr);
+#ifdef QE_ARCHAPPL_SUPPORT
+      QEArchiveInterface::archiveAlarmSeverity sevr =
+            QEArchiveInterface::archiveAlarmSeverity (this->severity);
+      result = QEArchiveInterface::alarmSeverityName (sevr);
+#endif
    } else {
       ACAI::ClientAlarmSeverity sevr = ACAI::ClientAlarmSeverity (this->severity);
       result = QString::fromStdString (ACAI::alarmSeverityImage (sevr));

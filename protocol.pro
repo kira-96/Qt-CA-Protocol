@@ -13,9 +13,12 @@ CONFIG += c++11
 EPICS_HOST_ARCH = linux-x86_64
 EPICS_BASE = /home/loongson/base-7.0.8
 ACAI = /home/loongson/acai
+PROTOBUF = D:\repo\protobuf-3.21.12
 
 # Support PV Access
 QE_PVACCESS_SUPPORT = YES
+# support Archiver Appliance
+QE_ARCHAPPL_SUPPORT = NO
 
 # Check EPICS dependancies
 #
@@ -55,6 +58,30 @@ equals(_PVACCESS_SUPPORT, "YES") {
 } else {
     message( "QE_PVACCESS_SUPPORT is not defined. The QE framework library will not include PV Access support." )
     message( "If you want to build with PV Access support, set environment variable QE_PVACCESS_SUPPORT=YES" )
+}
+
+#===========================================================
+# Archiver Appliance support
+#
+_ARCHAPPL_SUPPORT = $${QE_ARCHAPPL_SUPPORT}
+
+equals(_ARCHAPPL_SUPPORT, "YES") {
+    equals( QT_MAJOR_VERSION, 4 ) {
+        message( "QE_ARCHAPPL_SUPPORT is set, however Archvier Appliance support requires Qt version 5.0 or higher." )
+        message( "The QE framework library will be only built for CA Archiver." )
+    } else {
+        message( "QE_ARCHAPPL_SUPPORT is defined. The QE framework library will be built" )
+        message( "...: for both CA Archive and Archiver Appliance with Protobol Buffers." )
+
+        DEFINES += QE_ARCHAPPL_SUPPORT
+
+        include(archive/archive.pri)
+        INCLUDEPATH += $${PROTOBUF}/src
+        LIBS += -L$${PROTOBUF}/build -lprotobuf
+    }
+} else {
+    message( "QE_ARCHAPPL_SUPPORT is not defined. The QE framework library will be only built for CA Archiver." )
+    message( "If you want to build it to support Archiver Appliance, set QE_ARCHAPPL_SUPPORT=YES" )
 }
 
 # Define _MINGW if using a MinGW compiler
