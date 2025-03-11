@@ -37,9 +37,6 @@
 
 // We use encapsulation rather than direct inheritance.
 //
-QT_BEGIN_NAMESPACE
-class QTimer;
-QT_END_NAMESPACE
 class QE_ACAI_Client;  // differed - internal class
 
 //------------------------------------------------------------------------------
@@ -146,7 +143,6 @@ private:
 
    static QECaClientManager singleton;
    bool isRunning;
-   QTimer *pollTimer;
 
 private slots:
    void timeoutHandler ();

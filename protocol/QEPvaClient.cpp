@@ -1036,10 +1036,6 @@ QEPvaClientManager::QEPvaClientManager () : QObject (NULL)
       DEBUG << "This QEPvaClientManager instance is not the singleton";
       return;
    }
-
-   this->pollTimer = new QTimer(this);
-   this->pollTimer->setSingleShot(true);
-   connect(this->pollTimer, SIGNAL(timeout()), this, SLOT(timeoutHandler()));
 }
 
 //------------------------------------------------------------------------------
@@ -1052,9 +1048,6 @@ QEPvaClientManager::~QEPvaClientManager ()
    }
 
    this->isRunning = false;
-   if (this->pollTimer->isActive()) {
-       this->pollTimer->stop();
-   }
    pva::ClientFactory::stop();
    pvaClientUpdateQueue->clear();
 }
@@ -1078,7 +1071,7 @@ void QEPvaClientManager::timeoutHandler ()
    // Schedule another poll event - 16 mS approx 60Hz.
    // Note: the delay is relative to the end of processing the poll function.
    //
-   this->pollTimer->start(16);
+   QTimer::singleShot (16, this, SLOT (timeoutHandler ()));
 }
 
 // end

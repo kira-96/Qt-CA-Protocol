@@ -43,10 +43,6 @@
 #include <QEPvaData.h>
 #include <QEFrameworkLibraryGlobal.h>
 
-QT_BEGIN_NAMESPACE
-class QTimer;
-QT_END_NAMESPACE
-
 /// The QEPvaClient class
 ///
 class QE_FRAMEWORK_LIBRARY_SHARED_EXPORT QEPvaClient : public QEBaseClient
@@ -158,7 +154,6 @@ private:
 
    static QEPvaClientManager singleton;
    bool isRunning;
-   QTimer *pollTimer;
 #ifdef QE_INCLUDE_PV_ACCESS
    epics::pvAccess::ChannelProvider::shared_pointer pvaProvider = Q_NULLPTR;
 #endif

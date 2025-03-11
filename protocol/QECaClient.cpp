@@ -834,6 +834,9 @@ void QECaClientManager::initialise ()
    if (singleton.isRunning) return;
    singleton.isRunning = true;
 
+   ACAI::Client::initialise ();
+   ACAI::Client::setNotificationHandler (QECaClientManager::notificationHandlers);
+
    // Schedule first poll event.
    //
    QTimer::singleShot (1, &singleton, SLOT (timeoutHandler ()));
@@ -859,13 +862,6 @@ QECaClientManager::QECaClientManager () : QObject (NULL)
       DEBUG << "This QECaClientManager instance is not the singleton";
       return;
    }
-
-   this->pollTimer = new QTimer(this);
-   this->pollTimer->setSingleShot(true);
-   connect(this->pollTimer, SIGNAL(timeout()), this, SLOT(timeoutHandler()));
-
-   ACAI::Client::initialise ();
-   ACAI::Client::setNotificationHandler (QECaClientManager::notificationHandlers);
 }
 
 //------------------------------------------------------------------------------
@@ -881,9 +877,6 @@ QECaClientManager::~QECaClientManager ()
    // Call `finalise` here.
    //
    this->isRunning = false;
-   if (this->pollTimer->isActive()) {
-       this->pollTimer->stop();
-   }
 
    // There is an error message from EPICS here,
    // "errlogInit failed"
@@ -915,7 +908,7 @@ void QECaClientManager::timeoutHandler ()
    // Schedule another poll event - 16 mS approx 60Hz.
    // Note: the delay is relative to the end of processing the poll function.
    //
-   this->pollTimer->start(16);
+   QTimer::singleShot (16, this, SLOT (timeoutHandler ()));
 }
 
 // end
