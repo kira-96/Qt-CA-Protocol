@@ -10,15 +10,15 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # 修改目标架构和目录
-EPICS_HOST_ARCH = linux-x86_64
-EPICS_BASE = /home/loongson/base-7.0.8
-ACAI = /home/loongson/acai
+EPICS_HOST_ARCH = windows-x64-mingw
+EPICS_BASE = C:\Users\Kira\.epics\base-7.0.9
+ACAI = D:\repo\acai
 PROTOBUF = D:\repo\protobuf-3.21.12
 
 # Support PV Access
 QE_PVACCESS_SUPPORT = YES
 # support Archiver Appliance
-QE_ARCHAPPL_SUPPORT = NO
+QE_ARCHAPPL_SUPPORT = YES
 
 # Check EPICS dependancies
 #
@@ -95,25 +95,9 @@ equals( _EPICS_HOST_ARCH, "windows-x64-mingw" ) {
     DEFINES += _MINGW=TRUE
 }
 
+include(common/common.pri)
 include(protocol/protocol.pri)
 include(data/data.pri)
-
-HEADERS += \
-    QEFrameworkLibraryGlobal.h \
-    QEFrameworkVersion.h \
-    QECommon.h \
-    QEEnums.h \
-    QEPlatform.h \
-    QERecordFieldName.h \
-    QEThreadSafeQueue.h \
-    UserMessage.h
-
-SOURCES += \
-    QEFrameworkVersion.cpp \
-    QECommon.cpp \
-    QEPlatform.cpp \
-    QERecordFieldName.cpp \
-    UserMessage.cpp
 
 OTHER_FILES += \
     LICENSE \
@@ -143,7 +127,7 @@ LIBS += -L$${EPICS_BASE}/lib/$${EPICS_HOST_ARCH} -lca -lCom
 INCLUDEPATH += $${ACAI}/include
 LIBS += -L$${ACAI}/lib/$${EPICS_HOST_ARCH} -lacai
 
-TARGET = QEProtocol
+TARGET = qtepics
 
 # Place all intermediate generated files in architecture specific locations
 #
@@ -157,9 +141,9 @@ VERSION = 4.1.2
 CONFIG += skip_target_version_ext
 RC_LANG = 0x0004
 QMAKE_TARGET_COMPANY = "SINAP"
-QMAKE_TARGET_DESCRIPTION = "Qt EPICS Protocol Client Lib"
+QMAKE_TARGET_DESCRIPTION = "Qt EPICS Protocol Lib"
 QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2024-2025 SINAP. All rights reserved."
-QMAKE_TARGET_PRODUCT = "EPICS Protocol Lib"
+QMAKE_TARGET_PRODUCT = "Qt EPICS Protocol Lib"
 
 # Default rules for deployment.
 unix {
