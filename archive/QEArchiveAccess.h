@@ -72,6 +72,7 @@ public:
    // Exposes archiver type to the client(s).
    //
    ArchiverTypes getArchiverType () const;
+   static void setDefaultArchiverType(const QEArchiveAccess::ArchiverTypes type);
 
    // For use with the UserMessage mechanism.
    //
@@ -89,6 +90,11 @@ public:
    // Pattern used to poll for all PVs from the archiver
    //
    static QString getPattern ();
+   static void setDefaultPattern(const QString& pattern);
+
+   // Archives list
+   //
+   static void setArchivesList(const QString& list);
 
    // Number of PVs available
    //
@@ -204,7 +210,9 @@ private:
    friend class QEArchiveManager;
    void archiveResponse (const QEArchiveAccess::PVDataResponses& response) const;
 
-
+   static QEArchiveAccess::ArchiverTypes defaultType;
+   static QString archivesList;
+   static QString defaultPattern;
    // Used to convey a message during the creation of the object.
    //
    QString constructorMessage;

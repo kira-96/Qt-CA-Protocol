@@ -199,6 +199,7 @@ QEArchiveManager::QEArchiveManager (const QEArchiveAccess::ArchiverTypes archive
 {
    this->setSourceId (9001);
    this->allowPendingRequests = true;
+   this->pattern = ".*";
 
    this->pvNameToSourceLookUp = new PVNameToSourceSpecLookUp ();
    this->timer = new QTimer (this);
@@ -227,9 +228,8 @@ void QEArchiveManager::started ()
    // QEAdaptationParameters ap ("QE_");
    // const QString archives = ap.getString ("archive_list", "");
    // this->pattern = ap.getString ("archive_pattern", ".*");
-    // TODO
-    const QString archives = "";
-   this->pattern = ".*";
+   const QString archives = QEArchiveAccess::archivesList;
+   this->pattern = QEArchiveAccess::defaultPattern;
 
    // Normally a 5 minute wait to re-interogaye the archives, but allow first
    // re-request to be done after 3 minutes.
@@ -349,26 +349,25 @@ QEArchiveManager* QEArchiveManager::getInstance (QString& statusMessage)
 
    // QEAdaptationParameters ap ("QE_");
    // const QString archiveString = ap.getString ("archive_type", "CA").toUpper();
-   // TODO
-   const QString archiveString = "CA";
 
    bool conversionStatus = false;
-   int archiverIntVal = QEUtilities::stringToEnum (
-            QEArchiveAccess::staticMetaObject,
-            QString ("ArchiverTypes"),
-            archiveString, &conversionStatus);
+   // int archiverIntVal = QEUtilities::stringToEnum (
+   //          QEArchiveAccess::staticMetaObject,
+   //          QString ("ArchiverTypes"),
+   //          archiveString, &conversionStatus);
+
+   QEArchiveAccess::ArchiverTypes archiverType = QEArchiveAccess::defaultType;
 
    if (!conversionStatus) {
       // Note: caller reports errors, we are static and can't use sendMessage
       //
       statusMessage = QString ("QE_ARCHIVE_TYPE variable '%1' not correctly specified. "
-                               "Options are: CA or ARCHAPPL.").arg(archiveString);
+                               "Options are: CA or ARCHAPPL.").arg(archiverType);
       DEBUG << statusMessage;
       return singletonManager;  // It is still NULL
    }
 
-   QEArchiveAccess::ArchiverTypes archiverType;
-   archiverType = static_cast<QEArchiveAccess::ArchiverTypes> (archiverIntVal);
+   // archiverType = static_cast<QEArchiveAccess::ArchiverTypes> (archiverIntVal);
 
    // Question: Is there any need for a separeate thread for the QEArchiveManager
    // object itself as each archiveInterface is running in its own thread??
@@ -399,7 +398,7 @@ QEArchiveManager* QEArchiveManager::getInstance (QString& statusMessage)
 
       default:
          statusMessage =
-               QString ("Archiver type '%1' not supported").arg (archiveString);
+               QString ("Archiver type '%1' not supported").arg (archiverType);
          DEBUG << statusMessage;
          break;
    }

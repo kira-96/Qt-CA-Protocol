@@ -33,6 +33,10 @@
 static bool archiverInitialised = false;
 static QEArchiveManager* archiveManager = NULL;
 
+QEArchiveAccess::ArchiverTypes QEArchiveAccess::defaultType = QEArchiveAccess::CA;
+QString QEArchiveAccess::archivesList = QString();
+QString QEArchiveAccess::defaultPattern = QString(".*");
+
 //------------------------------------------------------------------------------
 //
 void QEArchiveAccess::initialiseArchiverType ()
@@ -101,6 +105,11 @@ QEArchiveAccess::~QEArchiveAccess () { }
 QEArchiveAccess::ArchiverTypes QEArchiveAccess::getArchiverType () const
 {
    return archiveManager ? archiveManager->getArchiverType() : QEArchiveAccess::Error;
+}
+
+void QEArchiveAccess::setDefaultArchiverType(const QEArchiveAccess::ArchiverTypes type)
+{
+    defaultType = type;
 }
 
 //------------------------------------------------------------------------------
@@ -218,6 +227,16 @@ int QEArchiveAccess::getNumberInterfaces ()
 QString QEArchiveAccess::getPattern ()
 {
    return archiveManager ? archiveManager->getPattern() : "";
+}
+
+void QEArchiveAccess::setDefaultPattern(const QString& pattern)
+{
+    defaultPattern = pattern;
+}
+
+void QEArchiveAccess::setArchivesList(const QString& list)
+{
+    archivesList = list;
 }
 
 //------------------------------------------------------------------------------
