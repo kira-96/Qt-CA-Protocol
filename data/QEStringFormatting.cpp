@@ -1300,7 +1300,7 @@ double QEStringFormatting::toDouble (const QString& image, bool& okay) const
       const bool isP = ((c == 'p') || (c == 'P'));      // alternative
       if ((isE && (workBase < 11)) || (isP && (workBase >= 11))) {
          bool ok;
-         exponent = work.midRef (j + 1).toInt (&ok);
+         exponent = work.mid (j + 1).toInt (&ok);
          if (!ok) {
             return 0.0;
          }

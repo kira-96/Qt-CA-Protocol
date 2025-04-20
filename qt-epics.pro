@@ -128,6 +128,7 @@ INCLUDEPATH += $${ACAI}/include
 LIBS += -L$${ACAI}/lib/$${EPICS_HOST_ARCH} -lacai
 
 TARGET = qtepics
+greaterThan(QT_MAJOR_VERSION, 5): TARGET = qt6epics
 
 # Place all intermediate generated files in architecture specific locations
 #
