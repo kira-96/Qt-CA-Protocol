@@ -834,6 +834,8 @@ void QECaClientManager::initialise ()
    if (singleton.isRunning) return;
    singleton.isRunning = true;
 
+   // Initialise CA client
+   //
    ACAI::Client::initialise ();
    ACAI::Client::setNotificationHandler (QECaClientManager::notificationHandlers);
 
@@ -847,6 +849,7 @@ void QECaClientManager::initialise ()
 void QECaClientManager::notificationHandlers (const char* notification)
 {
    UserMessage userMessage;
+
    userMessage.sendMessage (notification, message_types (MESSAGE_TYPE_ERROR));
 }
 
@@ -893,6 +896,11 @@ QECaClientManager::~QECaClientManager ()
 //
 void QECaClientManager::timeoutHandler ()
 {
+   if (this != &singleton) {
+      // Ignore, this is not the singleton object.
+      return;
+   }
+
    if (!this->isRunning) return;
 
    // The ACAI package requires a regular poll.
